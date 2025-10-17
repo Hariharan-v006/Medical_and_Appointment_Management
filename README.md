@@ -51,20 +51,13 @@ The hospital module handles basic appointment management for patients.
 ---
 
 ## 👨‍💻 Developer
-**Developed by:** *[Your Name]*  
-
-*(You can replace this section with your name or team details.)*
+**Developed by:** *HARIHARAN V* 
 
 ---
 
 ## 📄 License
 This project is provided for educational purposes.  
 You may modify or extend it as needed for learning and development.
-
----
-
-## 🖼️ Screenshots
-> *(Add screenshots of your UI here when available — e.g., main dashboard, inventory window, appointment window)*
 
 ---
 
