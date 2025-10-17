@@ -52,6 +52,9 @@ The hospital module handles basic appointment management for patients.
 
 ## 👨‍💻 Developer
 **Developed by:** *HARIHARAN V* 
+                  *VARSHINI MS*
+                  *PRATHYUSH HARAN*
+                  *ASHIKA KUMARI*
 
 ---
 
