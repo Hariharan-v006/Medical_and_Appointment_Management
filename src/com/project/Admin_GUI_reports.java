@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileWriter;
@@ -46,32 +45,63 @@ public class Admin_GUI_reports extends JFrame {
     }
 
     private void generateReport() {
-        String selected = (String) reportType.getSelectedItem();
-        if (selected == null) return;
+    String selected = (String) reportType.getSelectedItem();
+    if (selected == null) return;
 
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            String query = "";
-            String fileName = "";
+    String query = "";
+    String fileName = "";
 
-            if (selected.equals("Stock Report")) {
-                query = "SELECT drug_id, name, quantity, price FROM drugs";
-                fileName = "Stock_Report.csv";
-            } else if (selected.equals("Sales Report")) {
-                query = "SELECT s.sale_id, d.name, s.quantity_sold, s.total_price, s.date " +
-                        "FROM sales s JOIN drugs d ON s.drug_id = d.drug_id";
-                fileName = "Sales_Report.csv";
+    if (selected.equals("Stock Report")) {
+        query = "SELECT SN, Name, Type, Price, Quantity, `Expiry days`, Company, `Shelf No.` FROM mm_drugs";
+        fileName = "Stock_Report.csv";
+    } else if (selected.equals("Sales Report")) {
+        query = "SELECT SN, Name, Type, Price, Quantity, `Total Price`, Date FROM mm_sales";
+        fileName = "Sales_Report.csv";
+    }
+
+    try (Connection conn = DatabaseConnection.getConnection();
+         Statement stmt = conn.createStatement();
+         ResultSet rs = stmt.executeQuery(query)) {
+
+        // Load all rows into memory first
+        java.util.List<String[]> rows = new java.util.ArrayList<>();
+        ResultSetMetaData meta = rs.getMetaData();
+        int cols = meta.getColumnCount();
+
+        // Add header
+        String[] header = new String[cols];
+        for (int i = 1; i <= cols; i++) {
+            header[i - 1] = meta.getColumnName(i);
+        }
+        rows.add(header);
+
+        // Add data rows
+        while (rs.next()) {
+            String[] row = new String[cols];
+            for (int i = 1; i <= cols; i++) {
+                row[i - 1] = rs.getString(i);
             }
+            rows.add(row);
+        }
 
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            writeToCSV(rs, fileName);
-            JOptionPane.showMessageDialog(this, "Report generated successfully: " + fileName);
+        // Write to CSV
+        writeToCSV(rows, fileName);
+        JOptionPane.showMessageDialog(this, "Report generated successfully: " + fileName);
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+    }
+}
+
+private void writeToCSV(java.util.List<String[]> rows, String fileName) throws IOException {
+    try (FileWriter fw = new FileWriter(fileName)) {
+        for (String[] row : rows) {
+            fw.write(String.join(",", row) + "\n");
         }
     }
+}
+
 
     private void writeToCSV(ResultSet rs, String fileName) throws SQLException, IOException {
         FileWriter fw = new FileWriter(fileName);
@@ -91,5 +121,9 @@ public class Admin_GUI_reports extends JFrame {
         }
 
         fw.close();
+    }
+
+    public static void main(String[] args) {
+        new Admin_GUI_reports();
     }
 }
